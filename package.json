@@ -1,0 +1,13 @@
+{
+    "name": "node-api",
+    "main": "server.js",
+    "dependencies": {
+        "express": "latest",
+        "multer": "latest",
+        "orm": "latest",
+        "body-parser": "latest",
+        "jsonwebtoken": "latest",
+        "password-hash": "latest",
+        "mongoose": "latest"
+    }
+}

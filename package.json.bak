@@ -3,6 +3,7 @@
     "main": "server.js",
     "dependencies": {
         "express": "latest",
+        "multer": "latest",
         "orm": "latest",
         "body-parser": "latest",
         "jsonwebtoken": "latest",

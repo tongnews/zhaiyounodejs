@@ -75,7 +75,7 @@ app.use('/api/t/',function(req, res, next) {
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 80;
 
 // routes will go here
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
@@ -138,29 +138,60 @@ router.route('/user/signup').post(userExist, function (req, res) {
 
 	var password = req.body.password;
 	var username = req.body.username;
-
-	hash=hasher.generate(password);
+    var email = req.body.email;
+ 
+	var hash=hasher.generate(password);
 
 	var user = new User({
 		username: username,
 		password: hash,
-	}).save( function (err, newUser) {
+		email: email,
+	})
+	var token = jwt.sign(user, app.get('superSecret'), {
+					expiresIn: 1209600 // expires in 2 weeks
+	});
+	user.token=token;
+	user.save( function (err, newUser) {
 		if (err) throw err;
 		authenticate(newUser.username, password, function(err, user){
 			if (err)	res.send(err);
 			if(user){
-				var token = jwt.sign(user, app.get('superSecret'), {
-					expiresIn: 1209600 // expires in 2 weeks
-				});
 				// return the information including token as JSON
 				res.json({
 					success: true,
-					message: '获得token!',
-					token: token
+					message: '注册成功,获得token!',
+					token: token,
+					user:user
 				});
 			}
 		});
 	});
+});
+
+router.route('/t/user/name').post(function (req, res) {
+	
+	var username = req.body.username;
+	var newname = req.body.name;
+	
+    User.findOne({
+        username: username
+    },
+    function (err, user) {
+    	//console.log(user);
+        if (user) {
+            if (err)	res.send(err);
+			user.name=newname;
+			user.save(function (err, user){
+				  if (err)	res.send(err);
+				  res.send({ 
+				  	success: true, 
+				  	user: user, 
+				  	message: '用户昵称更改成功' });
+			});
+        } else {
+            return fn(new Error('找不到该用户'));
+        }
+    });
 });
 
 //用户登录
@@ -174,22 +205,51 @@ router.route('/user/login').post(function (req, res) {
 			res.json({
 				success: true,
 				message: '获得token!',
-				token: token
+				user: user
 			});
 		} else {
-			res.json({ success: false, message: '用户密码组合错误' });
+			res.json({ 
+				success: false, 
+				message: '用户密码组合错误' });
 		}
 	});
 });
 
-router.route('/user/image-upload').post(upload.single('avatarimg'),function(req, res, next) {
-  res.json({ ori: req.file.originalname, dst: req.file.filename, message: '上传成功' });
+router.route('/t/user/image-upload').post(upload.single('avatarimg'),function(req, res, next) {
+	
+	var username = req.body.username;
+	
+    User.findOne({
+        username: username
+    },
+    function (err, user) {
+    	//console.log(user);
+        if (user) {
+            if (err)	res.send(err);
+			user.picture=req.file.filename;
+			user.save(function (err,Nuser){
+				  if (err)	res.send(err);
+				  res.json({
+				  	success: true,
+				  	ori: req.file.originalname, 
+				  	dst: req.file.filename, 
+				  	user: Nuser,
+				  	message: '上传成功' });
+			});
+        } else {
+            return fn(new Error('找不到该用户'));
+        }
+    });
+ 
 });
 
 //全部用户
 router.route('/t/user/all').get(function(req, res) {
 	User.find({}, function(err, users) {
-		res.json(users);
+		res.json({
+			success:true, 
+			message: '获取用户列表成功',
+			users: users });
 	});
 });
 
@@ -216,13 +276,22 @@ router.route('/activity/add').post(function (req, res) {
 });
 
 
+
+router.route('/activity/id/:activity_id').get(function(req, res) {
+	Activity.findById(req.params.activityid, function(err, activity) {
+		if (err) res.send(err);
+		res.json(activity);
+	});
+});
+
+
 router.route('/activity/all').get(function(req, res) {
 	Activity.find({}, function(err, activities) {
 		res.json(activities);
 	});
 });
 
-router.route('/activity/subscribe').post(function(req, res) {
+router.route('/activity/subscribe/:activity_id').post(function(req, res) {
 	Activity.findById(req.params.activity_id, function(err, activity) {
 		if (err) res.send(err);
 		activity.cur_num =activity.cur_num+1;
@@ -235,7 +304,7 @@ router.route('/activity/subscribe').post(function(req, res) {
 	});
 });
 	
-router.route('/activity/unsubscribe').post(function(req, res) {
+router.route('/activity/unsubscribe/:activity_id').post(function(req, res) {
 	Activity.findById(req.params.activity_id, function(err, activity) {
 		if (err) res.send(err);
 		activity.cur_num =activity.cur_num-1;
@@ -248,6 +317,17 @@ router.route('/activity/unsubscribe').post(function(req, res) {
 	});
 });
 	
+router.route('/activity/comments/:activity_id')
+.get(function(req, res) {
+	Activity.find({}, function(err, activities) {
+		res.json(activities);
+	});
+}).post(function(req, res) {
+	Activity.find({}, function(err, activities) {
+		res.json(activities);
+	});
+});
+
 //INTRE API
 
 //INTRESPOT API

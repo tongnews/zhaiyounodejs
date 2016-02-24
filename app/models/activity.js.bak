@@ -9,12 +9,12 @@ var ActivitySchema   = new Schema({
             end_date    : Date,
             curr_num	: { type: Number, default: 0 },
             max_num	: { type: Number, default: 10 },
-            title: String,
-            text_cotent: String,
-            topic: String,
-            pictures: String,
+            title: { type: String, default: "" },
+            text_cotent: { type: String, default: "" },
+            topic: { type: String, default: "" },
+            pictures: { type: String, default: "" },
             joiner: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-            video: String,
+            video: { type: String, default: "" },
 });
 
 module.exports = mongoose.model('Activity', ActivitySchema);

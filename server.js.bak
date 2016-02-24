@@ -27,8 +27,9 @@ var upload = multer({ storage: storage });
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use('/static', express.static('uploads'));
 
-mongoose.connect('mongodb://http://54.222.138.55/zhaiyou'); 
+mongoose.connect('mongodb://115.159.199.49:27017/zhaiyou'); 
 var User     = require('./app/models/user');
 var Activity     = require('./app/models/activity');
 var IntreTag     = require('./app/models/intreTag');

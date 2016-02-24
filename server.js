@@ -27,8 +27,9 @@ var upload = multer({ storage: storage });
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use('/static', express.static('uploads'));
 
-mongoose.connect('mongodb://54.222.138.55:27017/zhaiyou'); 
+mongoose.connect('mongodb://115.159.199.49:27017/zhaiyou'); 
 var User     = require('./app/models/user');
 var Activity     = require('./app/models/activity');
 var IntreTag     = require('./app/models/intreTag');
@@ -74,7 +75,7 @@ app.use('/api/t/',function(req, res, next) {
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 80;
 
 // routes will go here
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)

@@ -8,5 +8,5 @@ COPY . /usr/src/server
 
 RUN npm install --production
 
-EXPOSE 1340
+EXPOSE 8080
 CMD [ "node","server.js"]

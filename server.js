@@ -80,7 +80,8 @@ var port = process.env.PORT || 80;
 // routes will go here
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.route('/info').get(function(req, res) {
-    res.json({ message: '欢迎使用宅游API!!!' });   
+    //res.json({ message: '欢迎使用宅游API!!!' });   
+    res.send('欢迎使用宅游API!!!');
 });
 
 //USER API

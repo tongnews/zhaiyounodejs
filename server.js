@@ -79,7 +79,7 @@ var port = process.env.PORT || 80;
 
 // routes will go here
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.route('/t/info').get(function(req, res) {
+router.route('/info').get(function(req, res) {
     res.json({ message: '欢迎使用宅游API!!!' });   
 });
 
@@ -160,7 +160,6 @@ router.route('/user/signup').post(userExist, function (req, res) {
 				res.json({
 					success: true,
 					message: '注册成功,获得token!',
-					token: token,
 					user:user
 				});
 			}
@@ -185,8 +184,8 @@ router.route('/t/user/name').post(function (req, res) {
 				  if (err)	res.send(err);
 				  res.send({ 
 				  	success: true, 
-				  	user: user, 
-				  	message: '用户昵称更改成功' });
+				  	message: '用户昵称更改成功',
+				  	user: user,  });
 			});
         } else {
             return fn(new Error('找不到该用户'));
@@ -231,10 +230,8 @@ router.route('/t/user/image-upload').post(upload.single('avatarimg'),function(re
 				  if (err)	res.send(err);
 				  res.json({
 				  	success: true,
-				  	ori: req.file.originalname, 
-				  	dst: req.file.filename, 
-				  	user: suser,
-				  	message: '上传成功' });
+				  	message: '上传成功',
+				  	user: suser });
 			});
         } else {
             return fn(new Error('找不到该用户'));
@@ -247,7 +244,7 @@ router.route('/t/user/image-upload').post(upload.single('avatarimg'),function(re
 router.route('/t/user/all').get(function(req, res) {
 	User.find({}, function(err, users) {
 		res.json({
-			success:true, 
+			success: true, 
 			message: '获取用户列表成功',
 			users: users });
 	});

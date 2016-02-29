@@ -1,4 +1,4 @@
 module.exports = {
-    'secret': 'ilovescotchyscotch',
+    'secret': '1',
     'database': 'mongodb://noder:noderauth&54;proximus.modulusmongo.net:27017/so9pojyN'
 };

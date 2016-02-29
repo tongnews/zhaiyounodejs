@@ -215,7 +215,7 @@ router.route('/user/login').post(function (req, res) {
 	});
 });
 
-router.route('/t/user/image-upload').post(upload.single('avatarimg'),function(req, res, next) {
+router.route('/user/image-upload').post(upload.single('avatarimg'),function(req, res, next) {
 	
 	var username = req.body.username;
 	

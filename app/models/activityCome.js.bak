@@ -8,8 +8,8 @@ var ActivityComeSchema   = new Schema({
             create_date		: { type: Date, default: Date.now },
             text_cotent: String,
             pictures: String,
-            talker: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
             video: String,
+            talker: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
 });
 
 module.exports = mongoose.model('ActivityCome', ActivityCome);

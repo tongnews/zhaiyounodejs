@@ -251,24 +251,39 @@ router.route('/t/user/all').get(function(req, res) {
 	});
 });
 
+router.route('/t/user/cleanall').get(function(req, res) {
+	User.remove({}, function(err, users) {
+		res.json({users});
+	});
+});
+
 //ACTIVITY API
 
-router.route('/activity/image-upload').post(upload.single('activityimg'),function(req, res, next) {
-  res.json({ ori: req.file.originalname, dst: req.file.filename, message: '上传成功' });
+router.route('/activity/image-upload').post(upload.single('activity-showimg'),function(req, res, next) {
+  res.json({
+  	success: true,
+  	message: '上传成功',
+  	ori: req.file.originalname, 
+  	dst: req.file.filename, 
+	});
 });
 
 router.route('/activity/add').post(function (req, res) {
 	var activity = new Activity({
 		title: req.body.title,
-		text_cotent:req.body.text_cotent,
-		owner: req.body.user_id,
+		description:req.body.description,
+		creator:req.body.creator,
 		max_num	: req.body.max_num,
-	}).save( function (err) {
+		fee: req.body.fee,
+		contact: req.body.contact,
+		address: req.body.address,
+	}).save( function (err, newacti) {
 		if (err) res.send(err);
 		// return the information including token as JSON
 		res.json({
 			success: true,
 			message: '活动申请成功!',
+			activity:newacti
 		});
 	});
 });
@@ -276,7 +291,8 @@ router.route('/activity/add').post(function (req, res) {
 
 
 router.route('/activity/id/:activity_id').get(function(req, res) {
-	Activity.findById(req.params.activityid, function(err, activity) {
+	Activity.findById(req.params.activity_id).populate('creator').populate('joiner')
+	.exec( function(err, activity) {
 		if (err) res.send(err);
 		res.json(activity);
 	});
@@ -289,15 +305,25 @@ router.route('/activity/all').get(function(req, res) {
 	});
 });
 
+router.route('/activity/cleanall').get(function(req, res) {
+	Activity.remove({}, function(err, activities) {
+		res.json(activities);
+	});
+});
+
 router.route('/activity/subscribe/:activity_id').post(function(req, res) {
 	Activity.findById(req.params.activity_id, function(err, activity) {
 		if (err) res.send(err);
-		activity.cur_num =activity.cur_num+1;
-		activity.joiner.unshift(req.params.user_id);
+		activity.joiner.unshift(req.body.user_id);
+		activity.curr_num =activity.curr_num+1;
 		// save the bear
-		activity.save(function(err) {
+		activity.save(function(err,newacti) {
 			if (err) res.send(err);
-			res.json({ message: 'Activity updated!' });
+			res.json({ 
+				success: true,
+				message: '活动订阅成功!',
+				activity:newacti
+			});
 		});
 	});
 });
@@ -305,16 +331,20 @@ router.route('/activity/subscribe/:activity_id').post(function(req, res) {
 router.route('/activity/unsubscribe/:activity_id').post(function(req, res) {
 	Activity.findById(req.params.activity_id, function(err, activity) {
 		if (err) res.send(err);
-		activity.cur_num =activity.cur_num-1;
-		activity.joiner.splice(req.params.user_id);
+		activity.joiner.splice(req.body.user_id);
+		activity.curr_num =activity.curr_num-1;
 		// save the bear
-		activity.save(function(err) {
+		activity.save(function(err,newacti) {
 			if (err) res.send(err);
-			res.json({ message: 'Activity updated!' });
+			res.json({
+				success: true,
+				message: '活动取消订阅成功!',
+				activity:newacti
+			});
 		});
 	});
 });
-	
+
 router.route('/activity/comments/:activity_id')
 .get(function(req, res) {
 	Activity.find({}, function(err, activities) {

@@ -148,8 +148,8 @@ router.route('/user/signup').post(userExist, function (req, res) {
 		password: hash,
 		email: email,
 	})
-	var token = jwt.sign(user, app.get('superSecret'), {
-					expiresIn: 1209600 // expires in 2 weeks
+	var token = jwt.sign({user:user.username}, app.get('superSecret'), {
+					expiresIn: "7d"  // expires in 2 weeks
 	});
 	user.token=token;
 	user.save( function (err, newUser) {
@@ -198,14 +198,19 @@ router.route('/t/user/name').post(function (req, res) {
 router.route('/user/login').post(function (req, res) {
 	authenticate(req.body.username, req.body.password, function (err, user) {
 		if (user) {
-			var token = jwt.sign(user, app.get('superSecret'), {
-				expiresIn: 1209600 // expires in 2 weeks
+			var token = jwt.sign({user:user.username}, app.get('superSecret'), {
+				expiresIn: "7d" // expires in 2 weeks
 			});
+			user.token=token;
 			// return the information including token as JSON
-			res.json({
-				success: true,
-				message: '获得token!',
-				user: user
+			user.save(function (err, user){
+				if (err)	res.send(err);
+				res.json({
+					success: true,
+					message: '获得token!',
+					token:token,
+					user: user
+				});
 			});
 		} else {
 			res.json({ 
@@ -215,7 +220,7 @@ router.route('/user/login').post(function (req, res) {
 	});
 });
 
-router.route('/t/user/image-upload').post(upload.single('avatarimg'),function(req, res, next) {
+router.route('/user/image-upload').post(upload.single('avatarimg'),function(req, res, next) {
 	
 	var username = req.body.username;
 	

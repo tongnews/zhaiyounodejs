@@ -140,13 +140,15 @@ router.route('/user/signup').post(userExist, function (req, res) {
 	var password = req.body.password;
 	var username = req.body.username;
     var email = req.body.email;
- 
+   var nickame = req.body.name;
+   
 	var hash=hasher.generate(password);
 
 	var user = new User({
 		username: username,
 		password: hash,
 		email: email,
+		name: nickame,
 	})
 	var token = jwt.sign({user:user.username}, app.get('superSecret'), {
 					expiresIn: "7d"  // expires in 2 weeks

@@ -284,6 +284,9 @@ router.route('/activity/add').post(function (req, res) {
 		fee: req.body.fee,
 		contact: req.body.contact,
 		address: req.body.address,
+		picture:req.body.picture,
+		start_date:req.body.start_date,
+		end_date:req.body.end_date,
 	}).save( function (err, newacti) {
 		if (err) res.send(err);
 		// return the information including token as JSON
@@ -305,12 +308,34 @@ router.route('/activity/id/:activity_id').get(function(req, res) {
 	});
 });
 
+router.route('/activity/remove/:activity_id').get(function(req, res) {
+	Activity.findById(req.params.activity_id, function(err, activity) {
+		activity.remove( function (err,activities){
+			res.json(activity);
+		}); 
+	});
+});
+
 
 router.route('/activity/all').get(function(req, res) {
 	Activity.find({}, function(err, activities) {
 		res.json(activities);
 	});
 });
+
+router.route('/activity/rget/:offset/:num').get(function(req, res) {
+	var a=req.params.offset;
+	var b=req.params.num;
+	var ntime=Date.now();
+	Activity.find({ 
+		start_date: { $gt:  ntime}, 
+		}).populate('creator').populate('joiner').sort({start_date:1}).skip(a).limit(b).exec(function(err, activities) {
+			if(err) res.send(err);
+		res.json(activities);
+	});
+});
+
+
 
 router.route('/activity/cleanall').get(function(req, res) {
 	Activity.remove({}, function(err, activities) {

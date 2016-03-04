@@ -275,6 +275,20 @@ router.route('/activity/image-upload').post(upload.single('activity-showimg'),fu
 	});
 });
 
+router.route('/activity/image-upload/id/:activity_id').post(upload.single('activity-showimg'),function(req, res, next) {
+	Activity.findById(req.params.activity_id, function (err, activi) {
+		activi.picture=req.file.filename;
+		activi.save(new function(err,sacti){
+			if(err)res.send(err);
+			res.json({
+				success: true,
+				message: '上传成功',
+				activity: sacti,
+			});
+		});
+	});
+});
+
 router.route('/activity/add').post(function (req, res) {
 	var activity = new Activity({
 		title: req.body.title,

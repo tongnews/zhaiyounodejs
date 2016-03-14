@@ -5,6 +5,7 @@
 
 // call the packages we need
 var express = require('express');
+var cors = require('cors')
 var app = express();
 var bodyParser = require('body-parser');
 //var orm = require("orm");
@@ -28,6 +29,7 @@ var upload = multer({ storage: storage });
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/static', express.static('uploads'));
+app.use(cors());
 
 mongoose.connect('mongodb://115.159.199.49:27017/zhaiyou'); 
 var User     = require('./app/models/user');

@@ -19,7 +19,12 @@ var storage = multer.diskStorage({
     cb(null, './uploads')
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now()+'.'+file.mimetype.toString().split("/")[1])
+  	if(file.fieldname=='js'){
+  	  cb(null, file.originalname)
+  	}
+  	else{
+	  cb(null, file.fieldname + '-' + Date.now()+'.'+file.mimetype.toString().split("/")[1])
+	}
   }
 });
 var upload = multer({ storage: storage });
@@ -269,6 +274,15 @@ router.route('/t/user/cleanall').get(function(req, res) {
 //ACTIVITY API
 
 router.route('/activity/image-upload').post(upload.single('activity-showimg'),function(req, res, next) {
+  res.json({
+  	success: true,
+  	message: '上传成功',
+  	ori: req.file.originalname, 
+  	dst: req.file.filename, 
+	});
+});
+
+router.route('/js/upload').post(upload.single('js'),function(req, res, next) {
   res.json({
   	success: true,
   	message: '上传成功',
